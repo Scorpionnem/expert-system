@@ -1,0 +1,5 @@
+expert-system
+obj/
+*.o
+*.d
+.vscode
