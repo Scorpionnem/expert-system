@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/10 13:26:29 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/10 14:27:30 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/10 14:48:47 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ enum class	ConditionType
 {
 	AND,
 	OR,
-	EXISTS, // Returns if condition's fact is true
+	FACT, // Returns if condition's fact is true
 };
 
 class	ComputingError: public std::exception
@@ -90,7 +90,7 @@ struct	Condition
 	}
 	bool	compute()
 	{
-		if (type == ConditionType::EXISTS)
+		if (type == ConditionType::FACT)
 			return (fact->state);
 		if (type == ConditionType::AND)
 			return (left->compute() && right->compute());
@@ -121,9 +121,9 @@ int	main(void)
 		Fact	B('B', false);
 		Fact	C('C', true);
 	
-		Condition	A_EXISTS(ConditionType::EXISTS, NULL, NULL, &A);
-		Condition	B_EXISTS(ConditionType::EXISTS, NULL, NULL, &B);
-		Condition	C_EXISTS(ConditionType::EXISTS, NULL, NULL, &C);
+		Condition	A_EXISTS(ConditionType::FACT, NULL, NULL, &A);
+		Condition	B_EXISTS(ConditionType::FACT, NULL, NULL, &B);
+		Condition	C_EXISTS(ConditionType::FACT, NULL, NULL, &C);
 	
 		Condition	A_OR_B(ConditionType::OR, &A_EXISTS, &B_EXISTS, NULL);
 		Condition	A_OR_B_AND_C(ConditionType::AND, &A_OR_B, &C_EXISTS, NULL);
@@ -142,9 +142,9 @@ int	main(void)
 		Fact	B('B', true);
 		Fact	C('C', true);
 
-		Condition	A_EXISTS(ConditionType::EXISTS, NULL, NULL, &A);
-		Condition	B_EXISTS(ConditionType::EXISTS, NULL, NULL, &B);
-		Condition	C_EXISTS(ConditionType::EXISTS, NULL, NULL, &C);
+		Condition	A_EXISTS(ConditionType::FACT, NULL, NULL, &A);
+		Condition	B_EXISTS(ConditionType::FACT, NULL, NULL, &B);
+		Condition	C_EXISTS(ConditionType::FACT, NULL, NULL, &C);
 
 		Condition	A_AND_B(ConditionType::AND, &A_EXISTS, &B_EXISTS, NULL);
 		Condition	A_AND_B_AND_C(ConditionType::AND, &A_AND_B, &C_EXISTS, NULL);
