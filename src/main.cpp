@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/10 13:26:29 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/10 14:48:47 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/20 14:29:43 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,146 +14,110 @@
 #include <vector>
 #include <string>
 
-/*
-	RULES:
-		contient list de conditions et un resultat
-		CONDITION (sous forme d'un arbre):
-			contient soit une autre condition soit un char representant un fact ET la condition (AND, OR, XOR)
-		RESULTAT:
-			un fact
-			FACT:
-				char qui represente le fact et un bool pour son state
-
-	exemple pour (A | B) & C => D
-	
-	RULE:
-		CONDITION: ( (A | B) & C )
-			CONDITION: (A | B)
-				CONDITION: A
-				CONDITION: B
-			CONDITION: C
-		RESULTAT:
-			FACT:
-				D -> true
-
-	Quand on veux verifier une query (?D), on envoie la liste de facts que l'on connait a notre expert system, il passe dans toutes les rules et si a la fin D est true, on valide la query
-*/
-
-struct	Fact
+enum class	FactState
 {
-	Fact(char c, bool state)
-	{
-		this->c = c;
-		this->state = state;
-	}
-	char	c;
-	bool	state = false;
+	FALSE,
+	TRUE,
+	UNDETERMINED
 };
+std::ostream& operator<<(std::ostream& os, const FactState& p)
+{
+	switch (p)
+	{
+		case FactState::FALSE:
+			return (os << "FALSE");
+		case FactState::TRUE:
+			return (os << "TRUE");
+		case FactState::UNDETERMINED:
+			return (os << "UNDETERMINED");
+	}
+}
 
 enum class	ConditionType
 {
 	AND,
 	OR,
-	FACT, // Returns if condition's fact is true
+	NOT,
 };
-
-class	ComputingError: public std::exception
+std::ostream& operator<<(std::ostream& os, const ConditionType& p)
 {
-	public:
-		ComputingError(): _msg("Computing error") {}
-		ComputingError(const std::string &msg): ComputingError()
-		{
-			_msg += " ";
-			_msg += msg;
-		}
-		virtual const char*	what() const throw()
-		{
-			return (_msg.c_str());
-		}
-	private:
-		std::string	_msg;
-};
-
-struct	Condition
-{
-	struct Condition	*left;
-	struct Condition	*right;
-	Fact				*fact;
-	ConditionType		type;
-
-	Condition(ConditionType type, struct Condition *left, struct Condition *right, Fact *fact)
+	switch (p)
 	{
-		this->type = type;
+		case ConditionType::AND:
+			return (os << "AND");
+		case ConditionType::OR:
+			return (os << "OR");
+		case ConditionType::NOT:
+			return (os << "NOT");
+	}
+}
+
+struct	ASTNode
+{
+	virtual ~ASTNode() {}
+	virtual FactState	compute() = 0;
+};
+
+struct	FactNode : public ASTNode
+{
+	char		c;
+	FactState	state = FactState::FALSE;
+	
+	FactNode(char c, FactState state)
+	{
+		this->c = c;
+		this->state = state;
+	}
+	FactState	compute()
+	{
+		return (state);
+	}
+};
+
+struct	ConditionNode : public ASTNode
+{
+	ASTNode			*left;
+	ASTNode			*right;
+	ConditionType	type;
+	
+	ConditionNode(ConditionType type, ASTNode *left, ASTNode *right = NULL)
+	{
 		this->left = left;
 		this->right = right;
-		this->fact = fact;
+		this->type = type;
 	}
-	bool	compute()
-	{
-		if (type == ConditionType::FACT)
-			return (fact->state);
-		if (type == ConditionType::AND)
-			return (left->compute() && right->compute());
-		if (type == ConditionType::OR)
-			return (left->compute() || right->compute());
-		throw ComputingError("ConditionType not found");
-	}
-};
 
-struct	Rule
-{
-	Rule(Condition *condition)
+	FactState	compute()
 	{
-		this->condition = condition;
-	}
-	Condition	*condition;
-	bool	compute()
-	{
-		return (condition->compute());
+		if (type == ConditionType::NOT)
+			return (left->compute() == FactState::FALSE ? FactState::TRUE : FactState::FALSE);
+
+		FactState	a = left->compute();
+		FactState	b = left->compute();
+
+		switch (type)
+		{
+			case ConditionType::AND:
+				return (a == FactState::TRUE && b == FactState::TRUE ? FactState::TRUE : FactState::FALSE);
+			case ConditionType::OR:
+				return (a == FactState::TRUE || b == FactState::TRUE ? FactState::TRUE : FactState::FALSE);
+			default:
+				return (FactState::UNDETERMINED);
+		}
+
+		return (FactState::UNDETERMINED);
 	}
 };
 
 int	main(void)
 {
-	{
-		// (A | B) & C => D
-		Fact	A('A', true);
-		Fact	B('B', false);
-		Fact	C('C', true);
-	
-		Condition	A_EXISTS(ConditionType::FACT, NULL, NULL, &A);
-		Condition	B_EXISTS(ConditionType::FACT, NULL, NULL, &B);
-		Condition	C_EXISTS(ConditionType::FACT, NULL, NULL, &C);
-	
-		Condition	A_OR_B(ConditionType::OR, &A_EXISTS, &B_EXISTS, NULL);
-		Condition	A_OR_B_AND_C(ConditionType::AND, &A_OR_B, &C_EXISTS, NULL);
-	
-		Rule	rule(&A_OR_B_AND_C);
-	
-		Fact	D('D', rule.compute());
-		std::cout << "(A | B) & C => D is: " << D.state << std::endl;
-	}
+	ASTNode	*A = new FactNode('A', FactState::FALSE);
+	ASTNode	*B = new FactNode('B', FactState::FALSE);
 
-	{
-		// A & B & C => D -> transforme en: (A & B) & C
-		// Il faut transformer avec des parentheses car fonctionne que par bloc de 2
-		// (Pas sur que ce soit valide sur le long terme mais c'est la solution a la quelle j'ai pense sur le moment)
-		Fact	A('A', true);
-		Fact	B('B', true);
-		Fact	C('C', true);
+	ASTNode	*A_OR_B = new ConditionNode(ConditionType::OR, A, B);
 
-		Condition	A_EXISTS(ConditionType::FACT, NULL, NULL, &A);
-		Condition	B_EXISTS(ConditionType::FACT, NULL, NULL, &B);
-		Condition	C_EXISTS(ConditionType::FACT, NULL, NULL, &C);
+	std::cout << A_OR_B->compute() << std::endl;
 
-		Condition	A_AND_B(ConditionType::AND, &A_EXISTS, &B_EXISTS, NULL);
-		Condition	A_AND_B_AND_C(ConditionType::AND, &A_AND_B, &C_EXISTS, NULL);
-
-		Rule	rule(&A_AND_B_AND_C);
-	
-		Fact	D('D', rule.compute());
-		std::cout << "A & B & C => D is: " << D.state << std::endl;
-	}
-	std::cout << "expert-system" << std::endl;
-	return (0);
+	ASTNode	*NOT_A = new ConditionNode(ConditionType::NOT, A);
+	std::cout << NOT_A->compute() << std::endl;
 }
