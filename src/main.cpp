@@ -6,13 +6,14 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/10 13:26:29 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/20 14:29:43 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/20 14:52:37 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 enum class	FactState
 {
@@ -37,6 +38,7 @@ enum class	ConditionType
 {
 	AND,
 	OR,
+	XOR,
 	NOT,
 };
 std::ostream& operator<<(std::ostream& os, const ConditionType& p)
@@ -47,6 +49,8 @@ std::ostream& operator<<(std::ostream& os, const ConditionType& p)
 			return (os << "AND");
 		case ConditionType::OR:
 			return (os << "OR");
+		case ConditionType::XOR:
+			return (os << "XOR");
 		case ConditionType::NOT:
 			return (os << "NOT");
 	}
@@ -62,7 +66,7 @@ struct	FactNode : public ASTNode
 {
 	char		c;
 	FactState	state = FactState::FALSE;
-	
+
 	FactNode(char c, FactState state)
 	{
 		this->c = c;
@@ -93,7 +97,7 @@ struct	ConditionNode : public ASTNode
 			return (left->compute() == FactState::FALSE ? FactState::TRUE : FactState::FALSE);
 
 		FactState	a = left->compute();
-		FactState	b = left->compute();
+		FactState	b = right->compute();
 
 		switch (type)
 		{
@@ -101,23 +105,32 @@ struct	ConditionNode : public ASTNode
 				return (a == FactState::TRUE && b == FactState::TRUE ? FactState::TRUE : FactState::FALSE);
 			case ConditionType::OR:
 				return (a == FactState::TRUE || b == FactState::TRUE ? FactState::TRUE : FactState::FALSE);
+			case ConditionType::XOR:
+				return (a != b ? FactState::TRUE : FactState::FALSE);
 			default:
 				return (FactState::UNDETERMINED);
 		}
-
-		return (FactState::UNDETERMINED);
 	}
 };
 
 int	main(void)
 {
-	ASTNode	*A = new FactNode('A', FactState::FALSE);
-	ASTNode	*B = new FactNode('B', FactState::FALSE);
+	std::unordered_map<char, ASTNode*>	facts;
 
-	ASTNode	*A_OR_B = new ConditionNode(ConditionType::OR, A, B);
+	facts['A'] = new FactNode('A', FactState::FALSE);
+	std::cout << "A\t:\t" <<  facts['A']->compute() << std::endl;
+	facts['B'] = new FactNode('B', FactState::FALSE);
+	std::cout << "B\t:\t" <<  facts['B']->compute() << std::endl;
 
-	std::cout << A_OR_B->compute() << std::endl;
+	ASTNode	*A_OR_B = new ConditionNode(ConditionType::OR, facts['A'], facts['B']);
+	std::cout << "A | B\t:\t" << A_OR_B->compute() << std::endl;
 
-	ASTNode	*NOT_A = new ConditionNode(ConditionType::NOT, A);
-	std::cout << NOT_A->compute() << std::endl;
+	ASTNode	*A_XOR_B = new ConditionNode(ConditionType::XOR, facts['A'], facts['B']);
+	std::cout << "A ^ B\t:\t" << A_XOR_B->compute() << std::endl;
+
+	ASTNode	*NOT_A = new ConditionNode(ConditionType::NOT, facts['A']);
+	std::cout << "!A\t:\t" << NOT_A->compute() << std::endl;
+
+	ASTNode	*NOT_A_XOR_B = new ConditionNode(ConditionType::XOR, NOT_A, facts['B']);
+	std::cout << "!A ^ B\t:\t" << NOT_A_XOR_B->compute() << std::endl;
 }
