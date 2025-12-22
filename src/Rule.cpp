@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 11:36:04 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/22 11:37:24 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/22 12:15:24 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,8 @@ FactState	Rule::compute()
 
 void	Rule::_applyConclusion(ASTNode* node, FactState state)
 {
-	ConditionNode* cond = dynamic_cast<ConditionNode*>(node);
-	FactNode* fact = dynamic_cast<FactNode*>(node);
+	ConditionNode	*cond = dynamic_cast<ConditionNode*>(node);
+	FactNode	*fact = dynamic_cast<FactNode*>(node);
 
 	if (fact)
 	{
@@ -42,7 +42,7 @@ void	Rule::_applyConclusion(ASTNode* node, FactState state)
 
 	if (cond->type == ConditionType::NOT)
 	{
-		FactNode* inner = dynamic_cast<FactNode*>(cond->left);
+		FactNode	*inner = dynamic_cast<FactNode*>(cond->left);
 		if (inner)
 			inner->state = FactState::FALSE;
 	}
@@ -54,8 +54,8 @@ void	Rule::_applyConclusion(ASTNode* node, FactState state)
 
 	else if (cond->type == ConditionType::OR || cond->type == ConditionType::XOR)
 	{
-		FactNode* l = dynamic_cast<FactNode*>(cond->left);
-		FactNode* r = dynamic_cast<FactNode*>(cond->right);
+		FactNode	*l = dynamic_cast<FactNode*>(cond->left);
+		FactNode	*r = dynamic_cast<FactNode*>(cond->right);
 
 		if (l && l->state == FactState::FALSE)
 			l->state = FactState::UNDETERMINED;

@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/10 13:26:29 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/22 11:37:42 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/22 12:15:45 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,16 @@
 
 int	main(void)
 {
-	std::unordered_map<char, ASTNode*>	facts;
+	std::unordered_map<char, FactNode*>	facts;
 
 	facts['A'] = new FactNode('A', FactState::TRUE);
-	std::cout << "A\t:\t" <<  facts['A']->compute() << std::endl;
+	std::cout << "A\t:\t" <<  facts['A']->state << std::endl;
 	facts['B'] = new FactNode('B', FactState::FALSE);
-	std::cout << "B\t:\t" <<  facts['B']->compute() << std::endl;
+	std::cout << "B\t:\t" <<  facts['B']->state << std::endl;
 	facts['C'] = new FactNode('C', FactState::FALSE);
-	std::cout << "C\t:\t" <<  facts['C']->compute() << std::endl;
+	std::cout << "C\t:\t" <<  facts['C']->state << std::endl;
 	facts['D'] = new FactNode('D', FactState::FALSE);
-	std::cout << "D\t:\t" <<  facts['D']->compute() << std::endl;
+	std::cout << "D\t:\t" <<  facts['D']->state << std::endl;
 
 	ASTNode	*A_OR_B = new ConditionNode(ConditionType::OR, facts['A'], facts['B']);
 	ASTNode	*C_AND_D = new ConditionNode(ConditionType::AND, facts['C'], facts['D']);
@@ -36,6 +36,6 @@ int	main(void)
 	std::cout << "A_OR_B\t:\t" << rule.compute() << std::endl;
 	std::cout << std::endl;
 
-	std::cout << "C\t:\t" <<  facts['C']->compute() << std::endl;
-	std::cout << "D\t:\t" <<  facts['D']->compute() << std::endl;
+	std::cout << "C\t:\t" <<  facts['C']->state << std::endl;
+	std::cout << "D\t:\t" <<  facts['D']->state << std::endl;
 }
