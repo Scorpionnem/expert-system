@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 11:36:04 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/22 14:22:53 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/22 14:48:11 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ FactState	Rule::compute()
 {
 	FactState	res = _condition->compute();
 	if (res == FactState::TRUE)
-		_applyConclusion(_conclusion, FactState::TRUE);
+		_applyConclusion(_conclusion, res);
 	return (res);
 }
 
@@ -36,7 +36,7 @@ void	Rule::_applyConclusion(ASTNode* node, FactState state)
 
 	if (fact)
 	{
-		std::cout << _line << " condition true, setting fact " << fact->c << " to " << state << std::endl;
+		std::cout << _line << " condition " << state << ", setting fact " << fact->c << " to " << state << std::endl;
 		if (fact->set && fact->state != state && fact->state != FactState::UNDETERMINED)
 			std::cout << _line << " CONTRADICTION, fact is set to " << fact->state << std::endl; // Need to set to undetermined, cant be resolved after contradiction is found
 		fact->set = true;
