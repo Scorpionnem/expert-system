@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/10 13:26:29 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/22 14:55:16 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/22 15:17:10 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,34 @@ void	prove(char fact)
 	}
 }
 
+#include <fstream>
+
+void	preprocessLine(std::string &line)
+{
+	line = line.substr(0, line.find('#'));
+}
+
+void	readFile(const std::string &path)
+{
+	std::ifstream	file(path);
+
+	if (!file.is_open())
+		return ;
+	std::string	line;
+	while (getline(file, line))
+	{
+		preprocessLine(line);
+
+		if (line.empty())
+			continue ;
+		std::cout << line << std::endl;
+	}
+}
+
 int	main(void)
 {
+	readFile("example.txt");
+	std::cout << std::endl;
 	facts['A'] = new FactNode('A', FactState::TRUE);
 	facts['B'] = new FactNode('B', FactState::FALSE);
 	facts['C'] = new FactNode('C', FactState::FALSE);
