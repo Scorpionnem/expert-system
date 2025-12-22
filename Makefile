@@ -5,13 +5,20 @@ INCLUDES = -I includes -I includes/server
 
 NAME = expert-system
 
-SRCS =	src/main.cpp
+SRCS =	src/main.cpp \
+		src/Rule.cpp \
+		src/ConditionType.cpp \
+		src/FactState.cpp \
+		src/ConditionNode.cpp
 
 OBJDIR = obj
 OBJS = $(SRCS:%.cpp=$(OBJDIR)/%.o)
 DEPS = $(SRCS:%.cpp=$(OBJDIR)/%.d)
 
-all: $(NAME)
+all:
+	@make -j compile --no-print-directory
+
+compile: $(NAME)
 
 re: fclean all
 
