@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 11:34:01 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/22 11:41:32 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/22 13:42:53 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ struct	ConditionNode : public ASTNode
 	ASTNode			*right;
 	ConditionType	type;
 	
-	ConditionNode(ConditionType type, ASTNode *left, ASTNode *right);
+	ConditionNode(ConditionType type, ASTNode *left, ASTNode *right = NULL);
 
 	FactState	compute();
 };

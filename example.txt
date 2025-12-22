@@ -10,6 +10,10 @@ A + B		=> Y + Z	# if A and B then Y and Z are true
 C | D		=> X | V	# if C or D then X or V are uncertain
 E + F		=> !V		# if E and F then V is false
 A + B		<=> C		# A and B if and only if C
+# Expand into:
+ A + B		=> C
+ C			=> A + B
+
 A + B		<=> !C		# A and B if and only if not C
 
 (A + B) + (C | D) => J	# if A and B and C or D then J is true

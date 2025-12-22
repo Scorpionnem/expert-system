@@ -6,16 +6,19 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 11:36:04 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/22 12:15:24 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/22 14:22:53 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Rule.hpp"
 
-Rule::Rule(ASTNode *condition, ASTNode *conclusion)
+Rule::Rule(ASTNode *condition, ASTNode *conclusion, const std::string &line)
 {
 	_condition = condition;
 	_conclusion = conclusion;
+	_line = line;
+	_getFacts(_conditionFacts, _condition);
+	_getFacts(_conclusionFacts, _conclusion);
 }
 
 FactState	Rule::compute()
@@ -33,6 +36,10 @@ void	Rule::_applyConclusion(ASTNode* node, FactState state)
 
 	if (fact)
 	{
+		std::cout << _line << " condition true, setting fact " << fact->c << " to " << state << std::endl;
+		if (fact->set && fact->state != state && fact->state != FactState::UNDETERMINED)
+			std::cout << _line << " CONTRADICTION, fact is set to " << fact->state << std::endl; // Need to set to undetermined, cant be resolved after contradiction is found
+		fact->set = true;
 		fact->state = state;
 		return ;
 	}
@@ -41,17 +48,12 @@ void	Rule::_applyConclusion(ASTNode* node, FactState state)
 		return ;
 
 	if (cond->type == ConditionType::NOT)
-	{
-		FactNode	*inner = dynamic_cast<FactNode*>(cond->left);
-		if (inner)
-			inner->state = FactState::FALSE;
-	}
+		_applyConclusion(cond->left, FactState::FALSE);
 	else if (cond->type == ConditionType::AND)
 	{
 		_applyConclusion(cond->left, state);
 		_applyConclusion(cond->right, state);
 	}
-
 	else if (cond->type == ConditionType::OR || cond->type == ConditionType::XOR)
 	{
 		FactNode	*l = dynamic_cast<FactNode*>(cond->left);

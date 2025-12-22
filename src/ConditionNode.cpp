@@ -6,13 +6,13 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 11:40:19 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/22 11:41:20 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/22 13:42:55 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ConditionNode.hpp"
 
-ConditionNode::ConditionNode(ConditionType type, ASTNode *left, ASTNode *right = NULL)
+ConditionNode::ConditionNode(ConditionType type, ASTNode *left, ASTNode *right)
 {
 	this->left = left;
 	this->right = right;

@@ -6,36 +6,53 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/10 13:26:29 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/22 12:15:45 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/22 14:38:15 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unordered_map>
+#include <vector>
 
 #include "Rule.hpp"
 
+std::unordered_map<char, FactNode*>	facts;
+std::vector<Rule>					rules;
+
+void	prove(char fact)
+{
+	if (facts[fact]->state == FactState::TRUE)
+	{
+		std::cout << fact << " fact TRUE" << std::endl;
+		return ;
+	}
+	if (facts[fact]->state == FactState::UNDETERMINED)
+	{
+		std::cout << fact << " fact UNDETERMINED" << std::endl;
+		return ;
+	}
+	for (Rule &rule : rules)
+	{
+		if (rule._hasFact(fact, rule._conclusion))
+		{
+			for (auto fact : rule._conditionFacts)
+				prove(fact.first);
+			rule.compute();
+		}
+	}
+}
+
 int	main(void)
 {
-	std::unordered_map<char, FactNode*>	facts;
-
 	facts['A'] = new FactNode('A', FactState::TRUE);
-	std::cout << "A\t:\t" <<  facts['A']->state << std::endl;
 	facts['B'] = new FactNode('B', FactState::FALSE);
-	std::cout << "B\t:\t" <<  facts['B']->state << std::endl;
 	facts['C'] = new FactNode('C', FactState::FALSE);
-	std::cout << "C\t:\t" <<  facts['C']->state << std::endl;
 	facts['D'] = new FactNode('D', FactState::FALSE);
-	std::cout << "D\t:\t" <<  facts['D']->state << std::endl;
 
-	ASTNode	*A_OR_B = new ConditionNode(ConditionType::OR, facts['A'], facts['B']);
-	ASTNode	*C_AND_D = new ConditionNode(ConditionType::AND, facts['C'], facts['D']);
+	ConditionNode	*C_OR_B = new ConditionNode(ConditionType::OR, facts['C'], facts['B']);(void)C_OR_B;
 
-	Rule	rule(A_OR_B, C_AND_D);
+	rules.push_back(Rule(facts['A'], facts['B'], "A => B"));
+	rules.push_back(Rule(facts['B'], facts['C'], "B => C"));
+	rules.push_back(Rule(C_OR_B, facts['D'], "C | B => D"));
 
-	std::cout << std::endl;
-	std::cout << "A_OR_B\t:\t" << rule.compute() << std::endl;
-	std::cout << std::endl;
-
-	std::cout << "C\t:\t" <<  facts['C']->state << std::endl;
+	prove('D');
 	std::cout << "D\t:\t" <<  facts['D']->state << std::endl;
 }
