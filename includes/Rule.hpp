@@ -27,7 +27,7 @@ class	Rule
 		{
 			return (_hasFact(fact, _conclusion));
 		}
-	// private:
+	//private:
 		void	_getFacts(std::unordered_map<char, FactNode*> &map, ASTNode *node)
 		{
 			ConditionNode	*cond = dynamic_cast<ConditionNode*>(node);

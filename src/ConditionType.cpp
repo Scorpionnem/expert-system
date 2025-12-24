@@ -25,4 +25,5 @@ std::ostream& operator<<(std::ostream& os, const ConditionType& p)
 		case ConditionType::NOT:
 			return (os << "NOT");
 	}
+	return (os);
 }

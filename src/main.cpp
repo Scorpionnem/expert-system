@@ -11,24 +11,23 @@
 /* ************************************************************************** */
 
 #include <vector>
+#include <algorithm>
+#include "parsing.hpp"
+#include "debug.hpp"
 
 #include "Rule.hpp"
 
-std::unordered_map<char, FactNode*>	facts;
-std::vector<Rule>					rules;
-
-void	prove(char fact)
+void	prove(SimulationState &simState, char fact)
 {
-	FactState	state = facts[fact]->state;
-	std::cout << "Proving " << fact << " wich is " << state << std::endl;
+	FactState	state = simState.facts[fact]->state;
 	if (state == FactState::TRUE)
 		return ;
-	for (Rule &rule : rules)
+	for (Rule &rule : simState.rules)
 	{
 		if (rule._hasFact(fact, rule._conclusion))
 		{
 			for (auto fact : rule._conditionFacts)
-				prove(fact.first);
+				prove(simState, fact.first);
 			rule.compute();
 		}
 	}
@@ -36,42 +35,43 @@ void	prove(char fact)
 
 #include <fstream>
 
-void	preprocessLine(std::string &line)
-{
-	line = line.substr(0, line.find('#'));
-}
-
-void	readFile(const std::string &path)
+std::vector<std::string>	readFile(const std::string &path)
 {
 	std::ifstream	file(path);
+	std::vector<std::string> lines;
 
-	if (!file.is_open())
-		return ;
+	if (!file.is_open()) return {};
+
 	std::string	line;
 	while (getline(file, line))
 	{
 		preprocessLine(line);
-
-		if (line.empty())
-			continue ;
-		std::cout << line << std::endl;
+		if (line.empty()) continue ;
+		lines.push_back(line);
 	}
+	return lines;
 }
 
-int	main(void)
+int	main(int ac, char **av)
 {
-	readFile("example.txt");
-	std::cout << std::endl;
-	facts['A'] = new FactNode('A', FactState::TRUE);
-	facts['B'] = new FactNode('B', FactState::FALSE);
-	facts['C'] = new FactNode('C', FactState::FALSE);
-	facts['D'] = new FactNode('D', FactState::FALSE);
-
-	ConditionNode	*C_OR_B = new ConditionNode(ConditionType::OR, facts['C'], facts['B']);(void)C_OR_B;
-
-	rules.push_back(Rule(facts['A'], facts['B'], "A => B"));
-	rules.push_back(Rule(facts['B'], facts['D'], "B => D"));
-
-	prove('D');
-	std::cout << "D\t:\t" <<  facts['D']->state << std::endl;
+	if (ac > 3)
+	{
+		std::cerr << "Usage: " << av[0] << " [Facts] [Querry]" << std::endl;
+		return (1);
+	}
+	try {
+		RuleSet ruleSet;
+		SimulationState simState;
+		std::vector<std::string> lines = readFile("example.txt");
+		ruleSet = parse(lines, ac, av);
+		simState = buildASTNodes(ruleSet);
+		for (const char &q : ruleSet.querry) {
+			prove(simState, q);
+			std::cout << q << " : " <<  simState.facts[q]->state << std::endl;
+		}
+		cleanupCreatedNodes();
+		for (auto &pair : simState.facts) delete pair.second;
+	} catch (const std::exception &e) {
+		std::cerr << e.what() << std::endl;
+	}
 }

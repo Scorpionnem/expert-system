@@ -9,7 +9,10 @@ SRCS =	src/main.cpp \
 		src/Rule.cpp \
 		src/ConditionType.cpp \
 		src/FactState.cpp \
-		src/ConditionNode.cpp
+		src/ConditionNode.cpp \
+		src/parsing.cpp \
+		src/Tokenizer.cpp \
+		src/debug.cpp
 
 OBJDIR = obj
 OBJS = $(SRCS:%.cpp=$(OBJDIR)/%.o)

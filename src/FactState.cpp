@@ -23,4 +23,5 @@ std::ostream& operator<<(std::ostream& os, const FactState& p)
 		case FactState::UNDETERMINED:
 			return (os << "UNDETERMINED");
 	}
+	return (os);
 }
