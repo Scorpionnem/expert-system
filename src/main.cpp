@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/10 13:26:29 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/26 17:27:39 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/26 17:28:52 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ FactState	prove(SimulationState &simState, char fact)
 
 	if (state == FactState::TRUE || checkedFacts[fact])
 	{
-		std::cout << "Fact " << fact << " is know to be " << state;
+		std::cout << "Fact " << fact << " is know to be " << state << std::endl;
 		return (state);
 	}
 	checkedFacts[fact] = true;
