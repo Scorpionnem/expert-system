@@ -55,7 +55,7 @@ void printAST(ASTNode* node, const std::string &prefix = "", bool isLeft = true)
 
 void printAllRules(const std::vector<Rule> &rules) {
     for (size_t i = 0; i < rules.size(); i++) {
-        std::cout << "\n[Règle " << i + 1 << "] " << rules[i]._line << std::endl;
+        std::cout << "\n[Règle " << i + 1 << "] " << rules[i]._conditionString << " => " << rules[i]._conclusionString << std::endl;
         std::cout << "  Condition:" << std::endl;
         printAST(rules[i]._condition, "    ");
         std::cout << "  Conclusion:" << std::endl;

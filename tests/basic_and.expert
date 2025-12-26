@@ -1,0 +1,7 @@
+A => B + C
+
+=A
+
+?BC
+
+# B and C should be TRUE

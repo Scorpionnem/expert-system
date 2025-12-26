@@ -26,7 +26,7 @@ void cleanupCreatedNodes() {
 
 std::vector<Token> tokenize(const std::string &expr) {
     std::vector<Token> tokens;
-    
+
     for (size_t i = 0; i < expr.length(); i++) {
         char c = expr[i];
         if (std::isspace(c)) continue;
@@ -36,14 +36,14 @@ std::vector<Token> tokenize(const std::string &expr) {
         else if (c == ')') tokens.push_back({Token::RPAREN, c});
         else throw std::runtime_error(std::string("Invalid character: ") + c);
     }
-    
+
     return tokens;
 }
 
 std::vector<Token> toPostfix(const std::vector<Token> &tokens) {
     std::vector<Token> output;
     std::stack<Token> operators;
-    
+
     for (const Token &token : tokens) {
         switch (token.type) {
             case Token::FACT:
@@ -60,7 +60,7 @@ std::vector<Token> toPostfix(const std::vector<Token> &tokens) {
             }
             case Token::LPAREN:
                 operators.push(token);
-                break;   
+                break;
             case Token::RPAREN:
                 while (!operators.empty() && operators.top().type != Token::LPAREN) {
                     output.push_back(operators.top());
@@ -71,7 +71,7 @@ std::vector<Token> toPostfix(const std::vector<Token> &tokens) {
                 break;
         }
     }
-    
+
     while (!operators.empty()) {
         if (operators.top().type == Token::LPAREN) throw std::runtime_error("Mismatched parentheses");
         output.push_back(operators.top());
@@ -82,7 +82,7 @@ std::vector<Token> toPostfix(const std::vector<Token> &tokens) {
 
 ASTNode* buildASTFromPostfix(const std::vector<Token> &postfix, std::unordered_map<char, FactNode*> &facts) {
     std::stack<ASTNode*> stack;
-    
+
     for (const Token &token : postfix) {
         if (token.type == Token::FACT) stack.push(facts[token.value]);
         else if (token.type == Token::OPERATOR) {
@@ -90,19 +90,19 @@ ASTNode* buildASTFromPostfix(const std::vector<Token> &postfix, std::unordered_m
                 if (stack.empty()) throw std::runtime_error("Invalid expression: not enough operands");
                 ASTNode* operand = stack.top();
                 stack.pop();
-                
+
                 ConditionNode *node = new ConditionNode(ConditionType::NOT, operand);
                 stack.push(node);
                 allCreatedNodes.push_back(node);
             }
             else {
                 if (stack.size() < 2) throw std::runtime_error("Invalid expression: not enough operands");
-                
+
                 ASTNode* right = stack.top();
                 stack.pop();
                 ASTNode* left = stack.top();
                 stack.pop();
-                
+
                 ConditionType type;
                 switch (token.value) {
                     case '+': type = ConditionType::AND; break;
@@ -116,40 +116,40 @@ ASTNode* buildASTFromPostfix(const std::vector<Token> &postfix, std::unordered_m
             }
         }
     }
-    
+
     if (stack.size() != 1) throw std::runtime_error("Invalid expression: too many operands");
-    
+
     return stack.top();
 }
 
 ASTNode* parseExpression(const std::string &expr, std::unordered_map<char, FactNode*> &facts) {
-    if (expr.empty()) throw std::runtime_error("Empty expression");    
+    if (expr.empty()) throw std::runtime_error("Empty expression");
     std::vector<Token> tokens = tokenize(expr);
     std::vector<Token> postfix = toPostfix(tokens);
     return buildASTFromPostfix(postfix, facts);
 }
 
 void buildRulesFromRuleSet(const RuleSet &ruleSet, std::unordered_map<char, FactNode*> &facts, std::vector<Rule> &rules) {
-    
+
     size_t numRules = ruleSet.rules.size();
     for (const RuleString &ruleStr : ruleSet.rules) {
         try {
             ASTNode* condition = parseExpression(ruleStr.condition, facts);
             ASTNode* conclusion = parseExpression(ruleStr.conclusion, facts);
-            
-            std::string ruleText = ruleStr.condition + " " + 
-                                  (ruleStr.equalityType == IMPLICATION ? "=>" : "<=>") + 
+
+            std::string ruleText = ruleStr.condition + " " +
+                                  (ruleStr.equalityType == IMPLICATION ? "=>" : "<=>") +
                                   " " + ruleStr.conclusion;
-            rules.push_back(Rule(condition, conclusion, ruleText));
-            
+            rules.push_back(Rule(condition, conclusion, ruleStr.condition, ruleStr.conclusion));
+
             if (ruleStr.equalityType == BICONDITIONAL) {
                 ASTNode* condCopy = parseExpression(ruleStr.condition, facts);
                 ASTNode* concCopy = parseExpression(ruleStr.conclusion, facts);
                 std::string reverseText = ruleStr.conclusion + " => " + ruleStr.condition;
-                rules.push_back(Rule(concCopy, condCopy, reverseText));
+                rules.push_back(Rule(concCopy, condCopy, ruleStr.conclusion, ruleStr.condition));
             }
         } catch (const std::exception &e) {
-            std::cerr << "Error parsing rule '" << ruleStr.condition 
+            std::cerr << "Error parsing rule '" << ruleStr.condition
                      << " => " << ruleStr.conclusion << "': " << e.what() << std::endl;
             throw;
         }

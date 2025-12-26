@@ -1,0 +1,8 @@
+A => B | C
+B | C => X
+
+=A
+
+?X
+
+# X should be UNDETERMINED

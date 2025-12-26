@@ -9,6 +9,7 @@ SRCS =	src/main.cpp \
 		src/Rule.cpp \
 		src/ConditionType.cpp \
 		src/FactState.cpp \
+		src/FactNode.cpp \
 		src/ConditionNode.cpp \
 		src/parsing.cpp \
 		src/Tokenizer.cpp \

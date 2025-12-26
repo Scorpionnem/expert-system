@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 11:40:19 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/22 13:42:55 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/26 17:05:05 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,11 @@ ConditionNode::ConditionNode(ConditionType type, ASTNode *left, ASTNode *right)
 	this->type = type;
 }
 
-FactState	ConditionNode::compute()
+FactState	ConditionNode::prove()
 {
 	if (type == ConditionType::NOT)
 	{
-		FactState	a = left->compute();
+		FactState	a = left->prove();
 
 		if (a == FactState::TRUE)
 			return (FactState::FALSE);
@@ -32,8 +32,8 @@ FactState	ConditionNode::compute()
 		return (FactState::UNDETERMINED);
 	}
 
-	FactState	a = left->compute();
-	FactState	b = right->compute();
+	FactState	a = left->prove();
+	FactState	b = right->prove();
 
 	switch (type)
 	{

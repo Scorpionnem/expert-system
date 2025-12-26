@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/10 13:26:29 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/22 15:17:10 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/26 17:04:29 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,20 +17,22 @@
 
 #include "Rule.hpp"
 
-void	prove(SimulationState &simState, char fact)
+std::map<char, bool>	checkedFacts;
+SimulationState			simState;
+
+FactState	prove(SimulationState &simState, char fact)
 {
 	FactState	state = simState.facts[fact]->state;
-	if (state == FactState::TRUE)
-		return ;
+
+	if (state == FactState::TRUE || checkedFacts[fact])
+		return (state);
+	checkedFacts[fact] = true;
+
 	for (Rule &rule : simState.rules)
-	{
 		if (rule._hasFact(fact, rule._conclusion))
-		{
-			for (auto fact : rule._conditionFacts)
-				prove(simState, fact.first);
-			rule.compute();
-		}
-	}
+			if (rule.prove() == FactState::TRUE)
+				return (rule._applyConclusion(rule._conclusion, FactState::TRUE, fact));
+	return (FactState::UNDETERMINED);
 }
 
 #include <fstream>
@@ -54,20 +56,20 @@ std::vector<std::string>	readFile(const std::string &path)
 
 int	main(int ac, char **av)
 {
-	if (ac > 3)
+	if (ac > 4 || ac < 2)
 	{
-		std::cerr << "Usage: " << av[0] << " [Facts] [Querry]" << std::endl;
+		std::cerr << "Usage: " << av[0] << " [File] [Facts] [Querry]" << std::endl;
 		return (1);
 	}
 	try {
 		RuleSet ruleSet;
-		SimulationState simState;
-		std::vector<std::string> lines = readFile("example.txt");
+		std::vector<std::string> lines = readFile(av[1]);
 		ruleSet = parse(lines, ac, av);
 		simState = buildASTNodes(ruleSet);
 		for (const char &q : ruleSet.querry) {
-			prove(simState, q);
-			std::cout << q << " : " <<  simState.facts[q]->state << std::endl;
+			checkedFacts.clear();
+			FactState	res = prove(simState, q);
+			std::cout << q << " : " <<  res << std::endl;
 		}
 		cleanupCreatedNodes();
 		for (auto &pair : simState.facts) delete pair.second;

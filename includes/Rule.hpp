@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 11:34:47 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/22 14:20:25 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/26 17:09:21 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@
 class	Rule
 {
 	public:
-		Rule(ASTNode *condition, ASTNode *conclusion, const std::string &line = "unset");
+		Rule(ASTNode *condition, ASTNode *conclusion, const std::string &conditionString, const std::string &conclusionString);
 
-		FactState	compute();
+		FactState	prove();
 		bool		concludesFact(char fact)
 		{
 			return (_hasFact(fact, _conclusion));
@@ -46,6 +46,8 @@ class	Rule
 			ConditionNode	*cond = dynamic_cast<ConditionNode*>(node);
 			FactNode		*fact = dynamic_cast<FactNode*>(node);
 
+			if (cond && (cond->type == ConditionType::XOR || cond->type == ConditionType::OR))
+				return (false);
 			if (cond)
 			{
 				if (_hasFact(c, cond->left))
@@ -61,8 +63,9 @@ class	Rule
 		ASTNode						*_conclusion;
 		std::unordered_map<char, FactNode*>	_conditionFacts;
 		std::unordered_map<char, FactNode*>	_conclusionFacts;
-		std::string	_line;
-		void	_applyConclusion(ASTNode* node, FactState state);
+		std::string	_conditionString;
+		std::string	_conclusionString;
+		FactState	_applyConclusion(ASTNode* node, FactState state, char fact);
 };
 
 #endif

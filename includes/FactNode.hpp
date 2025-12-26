@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 11:33:09 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/22 13:52:24 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/26 16:41:01 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,7 @@ struct	FactNode : public ASTNode
 		this->c = c;
 		this->state = state;
 	}
-	FactState	compute()
-	{
-		return (state);
-	}
+	FactState	prove();
 };
 
 #endif

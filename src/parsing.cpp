@@ -67,18 +67,18 @@ RuleSet parse(std::vector<std::string> &lines, int ac, char **av) {
 
     RuleSet ruleSet;
 
-    if (ac >= 2) ruleSet.facts = std::string(av[1]);
-    if (ac == 3) ruleSet.querry = std::string(av[2]);
+    if (ac >= 3) ruleSet.facts = std::string(av[2]);
+    if (ac == 4) ruleSet.querry = std::string(av[3]);
     for (const std::string &line : lines) {
         for (char c : line)
             if (!isSymbol(c) && !std::isupper(c)) throw std::runtime_error("[ERROR] Invalid character found. : " + c);
 
         if (line[0] == '=') {
-            if (ac >= 2) continue;
+            if (ac >= 3) continue;
             if (!ruleSet.facts.empty()) throw std::runtime_error("[ERROR] Multiple facts lines found.");
             ruleSet.facts = line.substr(1);
         } else if (line[0] == '?') {
-            if (ac == 3) continue;
+            if (ac == 4) continue;
             if (!ruleSet.querry.empty()) throw std::runtime_error("[ERROR] Multiple querry lines found.");
             ruleSet.querry = line.substr(1);
         } else {

@@ -1,24 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ASTNode.hpp                                        :+:      :+:    :+:   */
+/*   FactNode.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/22 11:31:38 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/26 15:45:29 by mbatty           ###   ########.fr       */
+/*   Created: 2025/12/26 16:41:09 by mbatty            #+#    #+#             */
+/*   Updated: 2025/12/26 16:42:13 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ASTNODE_HPP
-# define ASTNODE_HPP
+#include "FactNode.hpp"
+#include "parsing.hpp"
 
-# include "FactState.hpp"
+extern SimulationState	simState;
+FactState	prove(SimulationState &simState, char fact);
 
-struct	ASTNode
+FactState	FactNode::prove()
 {
-	virtual ~ASTNode() {}
-	virtual FactState	prove() = 0;
-};
-
-#endif
+	return (::prove(simState, this->c));
+}

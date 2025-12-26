@@ -1,0 +1,7 @@
+A => (B + C) | D
+
+=A
+
+?BCD
+
+# B and c and D should be UNDETERMINED
