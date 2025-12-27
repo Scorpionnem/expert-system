@@ -5,4 +5,4 @@ B | C => X
 
 ?X
 
-# X should be UNDETERMINED
+# X should be FALSE

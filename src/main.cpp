@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/10 13:26:29 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/27 16:19:13 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/27 16:59:13 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,10 @@ FactState	prove(SimulationState &simState, char fact)
 	{
 		if (rule._hasFact(fact, rule._conclusion))
 		{
-			std::cout << "Proving " << rule._conditionString << " => " << rule._conclusionString << std::endl;
-			if (rule.prove() == FactState::TRUE)
+			std::cout << "Proving: " << rule._conditionString << " => " << rule._conclusionString << std::endl;
+			FactState	ruleRes = rule.prove();
+			std::cout << "Proved: " << rule._conditionString << " is " << ruleRes << std::endl;
+			if (ruleRes == FactState::TRUE)
 			{
 				FactState	conclusion = rule.applyConclusion(fact);
 
@@ -50,6 +52,8 @@ FactState	prove(SimulationState &simState, char fact)
 				res = conclusion;
 				provedRules++;
 			}
+			else
+				std::cout << "Cannot set conclusion: " << rule._conclusionString << std::endl;
 		}
 	}
 	if (provedRules == 0)

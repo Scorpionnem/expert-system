@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 11:36:04 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/27 15:52:21 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/27 16:54:30 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,7 @@ Rule::Rule(ASTNode *condition, ASTNode *conclusion, const std::string &condition
 
 FactState	Rule::prove()
 {
-	FactState	res = _condition->prove();
-	if (res == FactState::TRUE)
-		std::cout << "Condition: " << this->_conditionString << " is TRUE" << std::endl;
-	return (res);
+	return (_condition->prove());
 }
 
 void	Rule::_applyConclusion(ASTNode* node, FactState state, char c)
