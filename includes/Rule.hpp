@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 11:34:47 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/26 17:09:21 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/27 15:44:43 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,12 @@
 # include <unordered_map>
 # include "FactNode.hpp"
 # include "ConditionNode.hpp"
+# include <exception>
 
 class	Rule
 {
+	public:
+		class	ContradictionError : public std::exception {};
 	public:
 		Rule(ASTNode *condition, ASTNode *conclusion, const std::string &conditionString, const std::string &conclusionString);
 
@@ -27,7 +30,20 @@ class	Rule
 		{
 			return (_hasFact(fact, _conclusion));
 		}
-	//private:
+		FactState	applyConclusion(char fact)
+		{
+			_conclusionReturn = FactState::UNDETERMINED;
+			try
+			{
+				_applyConclusion(_conclusion, FactState::TRUE, fact);
+			} catch (const ContradictionError &e) {
+				std::cout << "Contradiction error in " << _conclusionString << std::endl;
+				return (FactState::UNDETERMINED);
+			}
+			return (_conclusionReturn);
+		}
+	// private:
+		FactState	_conclusionReturn;
 		void	_getFacts(std::unordered_map<char, FactNode*> &map, ASTNode *node)
 		{
 			ConditionNode	*cond = dynamic_cast<ConditionNode*>(node);
@@ -46,8 +62,8 @@ class	Rule
 			ConditionNode	*cond = dynamic_cast<ConditionNode*>(node);
 			FactNode		*fact = dynamic_cast<FactNode*>(node);
 
-			if (cond && (cond->type == ConditionType::XOR || cond->type == ConditionType::OR))
-				return (false);
+			// if (cond && (cond->type == ConditionType::XOR || cond->type == ConditionType::OR))
+			// 	return (false);
 			if (cond)
 			{
 				if (_hasFact(c, cond->left))
@@ -65,7 +81,7 @@ class	Rule
 		std::unordered_map<char, FactNode*>	_conclusionFacts;
 		std::string	_conditionString;
 		std::string	_conclusionString;
-		FactState	_applyConclusion(ASTNode* node, FactState state, char fact);
+		void	_applyConclusion(ASTNode* node, FactState state, char fact);
 };
 
 #endif

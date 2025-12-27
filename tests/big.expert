@@ -1,0 +1,14 @@
+A => B
+B => C
+C => D
+D => E
+
+E | A => F
+
+F + A + G => I
+
+((P | Q) + (R | S)) + I => Z
+
+=AG PS
+
+?Z

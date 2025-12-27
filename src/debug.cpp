@@ -55,7 +55,10 @@ void printAST(ASTNode* node, const std::string &prefix = "", bool isLeft = true)
 
 void printAllRules(const std::vector<Rule> &rules) {
     for (size_t i = 0; i < rules.size(); i++) {
-        std::cout << "\n[Règle " << i + 1 << "] " << rules[i]._conditionString << " => " << rules[i]._conclusionString << std::endl;
+		if (i != 0)
+			std::cout << std::endl;
+
+        std::cout << "[Rule " << i + 1 << "] " << rules[i]._conditionString << " => " << rules[i]._conclusionString << std::endl;
         std::cout << "  Condition:" << std::endl;
         printAST(rules[i]._condition, "    ");
         std::cout << "  Conclusion:" << std::endl;
@@ -68,5 +71,5 @@ void printAllFacts(const std::unordered_map<char, FactNode*> &facts) {
     for (const auto &pair : facts) keys.push_back(pair.first);
     std::sort(keys.begin(), keys.end());
     for (char key : keys)
-        std::cout << "  " << key << " : " << facts.at(key)->state << std::endl;
+        std::cout << key << " : " << facts.at(key)->state << std::endl;
 }

@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/10 13:26:29 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/26 17:28:52 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/27 16:19:13 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 #include <algorithm>
 #include "parsing.hpp"
 #include "debug.hpp"
-
 #include "Rule.hpp"
+#include "Color.hpp"
 
 std::map<char, bool>	checkedFacts;
 SimulationState			simState;
@@ -40,21 +40,23 @@ FactState	prove(SimulationState &simState, char fact)
 			std::cout << "Proving " << rule._conditionString << " => " << rule._conclusionString << std::endl;
 			if (rule.prove() == FactState::TRUE)
 			{
-				FactState	conclusion = rule._applyConclusion(rule._conclusion, FactState::TRUE, fact);
+				FactState	conclusion = rule.applyConclusion(fact);
 
 				if (conclusion != res && res != FactState::UNDETERMINED)
 				{
-					std::cout << "CONTRADICTION ERROR" << std::endl;
+					std::cout << Color::Red <<  "Contradiction error between rules" << Color::Reset << std::endl;
 					return (FactState::UNDETERMINED);
 				}
 				res = conclusion;
 				provedRules++;
 			}
-			std::cout << std::endl;
 		}
 	}
 	if (provedRules == 0)
+	{
 		std::cout << "No rules were able to prove " << fact << std::endl;
+		return (state);
+	}
 	return (res);
 }
 
@@ -89,10 +91,30 @@ int	main(int ac, char **av)
 		std::vector<std::string> lines = readFile(av[1]);
 		ruleSet = parse(lines, ac, av);
 		simState = buildASTNodes(ruleSet);
-		for (const char &q : ruleSet.querry) {
+
+		printAllFacts(simState.facts);
+		std::cout << std::endl;
+		printAllRules(simState.rules);
+		std::cout << std::endl;
+
+		bool	first = true;
+		for (const char &q : ruleSet.querry)
+		{
+			if (!first)
+				std::cout << std::endl;
+			first = false;
+
 			checkedFacts.clear();
 			FactState	res = prove(simState, q);
-			std::cout << q << " : " <<  res << std::endl;
+
+			if (res == FactState::TRUE)
+				std::cout << Color::Green;
+			if (res == FactState::FALSE)
+				std::cout << Color::Red;
+			if (res == FactState::UNDETERMINED)
+				std::cout << Color::Yellow;
+
+			std::cout << std::endl << q << " : " <<  res << Color::Reset << std::endl;
 		}
 		cleanupCreatedNodes();
 		for (auto &pair : simState.facts) delete pair.second;
