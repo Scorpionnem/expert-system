@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 11:33:09 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/26 16:41:01 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/28 12:32:04 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 # define FACTNODE_HPP
 
 # include "ASTNode.hpp"
+# include <vector>
+
+class Rule;
 
 struct	FactNode : public ASTNode
 {
@@ -27,6 +30,10 @@ struct	FactNode : public ASTNode
 		this->state = state;
 	}
 	FactState	prove();
+	//Rules that contain this fact in its conclusion
+	std::vector<Rule>	conclusions;
+	//Rules that contain this fact in its condition
+	std::vector<Rule>	conditions;
 };
 
 #endif

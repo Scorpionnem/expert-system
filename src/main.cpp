@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/10 13:26:29 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/28 12:09:54 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/28 12:32:45 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,21 @@ FactState	prove(SimulationState &simState, char fact)
 	return (res);
 }
 
+void	linkFactsRules(SimulationState &simState)
+{
+	for (auto &pair : simState.facts)
+	{
+		FactNode	*fact = pair.second;
+		for (Rule &rule : simState.rules)
+		{
+			if (rule._hasFact(fact->c, rule._conclusion))
+				fact->conclusions.push_back(rule);
+			if (rule._hasFact(fact->c, rule._condition))
+				fact->conditions.push_back(rule);
+		}
+	}
+}
+
 #include <fstream>
 
 std::vector<std::string>	readFile(const std::string &path)
@@ -102,6 +117,7 @@ int	main(int ac, char **av)
 		std::vector<std::string> lines = readFile(av[1]);
 		ruleSet = parse(lines, ac, av);
 		simState = buildASTNodes(ruleSet);
+		linkFactsRules(simState);
 
 		printAllFacts(simState.facts);
 		std::cout << std::endl;
