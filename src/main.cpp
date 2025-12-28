@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/10 13:26:29 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/27 16:59:13 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/12/28 12:09:54 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,15 @@ FactState	prove(SimulationState &simState, char fact)
 {
 	FactState	state = simState.facts[fact]->state;
 
-	if (state == FactState::TRUE || checkedFacts[fact])
+	if (state == FactState::TRUE)
 	{
 		std::cout << "Fact " << fact << " is know to be " << state << std::endl;
 		return (state);
+	}
+	if (checkedFacts[fact])
+	{
+		std::cout << Color::Yellow << "Cycle detected on " << fact << Color::Reset << std::endl;
+		return (FactState::UNDETERMINED);
 	}
 	checkedFacts[fact] = true;
 
@@ -59,8 +64,10 @@ FactState	prove(SimulationState &simState, char fact)
 	if (provedRules == 0)
 	{
 		std::cout << "No rules were able to prove " << fact << std::endl;
+		checkedFacts[fact] = false;
 		return (state);
 	}
+	checkedFacts[fact] = false;
 	return (res);
 }
 

@@ -97,8 +97,8 @@ RuleSet parse(std::vector<std::string> &lines, int ac, char **av) {
             ruleSet.rules.push_back(rule);
         }
     }
-    if (ruleSet.facts.empty() || ruleSet.querry.empty())
-        throw std::runtime_error("[ERROR] Missing facts or querry line.");
+    if (ruleSet.querry.empty())
+        throw std::runtime_error("[ERROR] Missing querry line.");
 
     std::map<char, FactState> letters = getAllLetters(ruleSet);
     if (!checkFactsLine(ruleSet.facts, letters) || !checkFactsLine(ruleSet.querry, letters))
