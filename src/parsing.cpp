@@ -71,7 +71,7 @@ RuleSet parse(std::vector<std::string> &lines, int ac, char **av) {
     if (ac == 4) ruleSet.querry = std::string(av[3]);
     for (const std::string &line : lines) {
         for (char c : line)
-            if (!isSymbol(c) && !std::isupper(c)) throw std::runtime_error("[ERROR] Invalid character found. : " + c);
+            if (!isSymbol(c) && !std::isupper(c)) throw std::runtime_error("[ERROR] Invalid character found. : " + std::to_string(c));
 
         if (line[0] == '=') {
             if (ac >= 3) continue;
