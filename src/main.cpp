@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/10 13:26:29 by mbatty            #+#    #+#             */
-/*   Updated: 2025/12/28 12:32:45 by mbatty           ###   ########.fr       */
+/*   Updated: 2026/01/16 12:31:42 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ FactState	prove(SimulationState &simState, char fact)
 		return (FactState::UNDETERMINED);
 	}
 	checkedFacts[fact] = true;
+	
+	std::cout << "Trying to prove " << fact << std::endl;
 
 	uint		provedRules = 0;
 	FactState	res = FactState::UNDETERMINED;
